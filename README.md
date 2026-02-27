@@ -5,10 +5,19 @@ A fast, static personal link dashboard for use as a browser new-tab page.
 ## Features
 
 - Links grouped by category
-- Add, edit, and delete links
+- Add, edit, delete, and drag links between categories
 - Create and delete categories
+- Domain-based link icons (known platform icon, favicon fallback, generic fallback)
+- Theme toggle: `Light`, `Dark`, or `System` (follows OS), saved to `localStorage`
+- Password lock overlay for Edit Mode with persistent unlock state and `Lock` sign out
 - Local persistence via browser `localStorage`
 - No backend and no external database
+
+## Password lock
+
+- Default password is `password`.
+- Change it in `script.js` by editing `EDIT_PASSWORD`.
+- This lock is client-side only (UI-level protection). It is not secure authentication.
 
 ## Run locally
 

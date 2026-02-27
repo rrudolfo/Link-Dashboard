@@ -4,6 +4,33 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Link Dashboard</title>
+    <script>
+      (function () {
+        var THEME_KEY = "link_dashboard_theme_preference_v1";
+        var UNLOCK_KEY = "link_dashboard_edit_unlocked_v1";
+        var root = document.documentElement;
+        var valid = { light: true, dark: true, system: true };
+        var preference = "system";
+        var unlocked = false;
+
+        try {
+          var stored = localStorage.getItem(THEME_KEY);
+          if (stored && valid[stored]) {
+            preference = stored;
+          }
+          unlocked = localStorage.getItem(UNLOCK_KEY) === "true";
+        } catch (error) {}
+
+        var prefersDark =
+          typeof window.matchMedia === "function" &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches;
+        var resolved = preference === "system" ? (prefersDark ? "dark" : "light") : preference;
+
+        root.setAttribute("data-theme", resolved);
+        root.setAttribute("data-theme-preference", preference);
+        root.setAttribute("data-edit-unlocked", unlocked ? "true" : "false");
+      })();
+    </script>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
@@ -12,8 +39,35 @@
         <h1>Link Dashboard</h1>
         <p class="subtitle">Your personal new tab page</p>
       </div>
-      <button id="new-link-btn" class="button button-primary" type="button">New Link</button>
+      <div class="header-actions">
+        <label class="visually-hidden" for="theme-select">Theme</label>
+        <select id="theme-select" class="theme-select" aria-label="Theme">
+          <option value="system">System</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+        <button id="lock-btn" class="button" type="button">Lock</button>
+        <button id="new-link-btn" class="button button-primary" type="button">New Link</button>
+      </div>
     </header>
+
+    <div id="lock-overlay" class="lock-overlay" role="dialog" aria-modal="true" aria-labelledby="lock-title">
+      <section class="lock-panel">
+        <h2 id="lock-title">Unlock Edit Mode</h2>
+        <p class="lock-copy">Enter your password to add, edit, move, or delete links and categories.</p>
+        <form id="unlock-form" class="stack-form">
+          <input
+            id="unlock-password-input"
+            type="password"
+            placeholder="Password"
+            autocomplete="current-password"
+            required
+          />
+          <button class="button button-primary" type="submit">Unlock</button>
+        </form>
+        <p id="unlock-error" class="lock-error" role="alert" aria-live="polite"></p>
+      </section>
+    </div>
 
     <section class="panel">
       <form id="category-form" class="inline-form">
@@ -71,7 +125,12 @@
 
     <template id="link-template">
       <li class="link-item">
-        <a class="link-anchor" target="_blank" rel="noopener noreferrer"></a>
+        <div class="link-main">
+          <span class="link-icon-slot" aria-hidden="true">
+            <img class="link-icon" alt="" width="18" height="18" />
+          </span>
+          <a class="link-anchor" target="_blank" rel="noopener noreferrer"></a>
+        </div>
         <div class="link-actions">
           <button class="button button-small edit-link-btn" type="button">Edit</button>
           <button class="button button-small delete-link-btn" type="button">Delete</button>
